@@ -15,7 +15,11 @@
 
 * { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
 
 body {
   margin: 0;
@@ -25,7 +29,11 @@ body {
   background: #fff;
   line-height: 1.7;
   font-size: 17px;
+  overflow-wrap: break-word;
+  -webkit-tap-highlight-color: transparent;
 }
+
+img, svg, video { max-width: 100%; }
 
 a { color: var(--teal-dark); }
 a:hover { color: var(--teal); }
@@ -40,6 +48,7 @@ a:hover { color: var(--teal); }
   position: sticky;
   top: 0;
   z-index: 10;
+  padding-top: env(safe-area-inset-top, 0px);
 }
 .site-header .wrap-wide {
   display: flex;
@@ -48,18 +57,21 @@ a:hover { color: var(--teal); }
   padding-top: 10px;
   padding-bottom: 10px;
 }
-.site-header img.logo { width: 40px; height: 40px; border-radius: 50%; }
+.site-header .logo { width: 40px; height: 40px; flex: none; display: block; }
 .site-header .brand {
   font-weight: 700;
   font-size: 1.05rem;
   color: var(--ink);
   text-decoration: none;
+  padding: 8px 0;
 }
 .site-header nav { margin-left: auto; display: flex; gap: 18px; }
 .site-header nav a {
   color: var(--muted);
   text-decoration: none;
   font-size: 0.95rem;
+  display: inline-block;
+  padding: 10px 2px;
 }
 .site-header nav a:hover { color: var(--teal-dark); }
 
@@ -79,8 +91,11 @@ a:hover { color: var(--teal); }
   color: #fff !important;
   text-decoration: none;
   font-weight: 700;
-  padding: 12px 26px;
+  padding: 14px 28px;
+  min-height: 48px;
   border-radius: 999px;
+  touch-action: manipulation;
+  max-width: 100%;
 }
 .btn:hover { background: var(--teal-dark); }
 .btn-accent { background: var(--accent); }
@@ -100,7 +115,7 @@ a:hover { color: var(--teal); }
 /* Article cards (home) */
 .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
   gap: 20px;
   padding: 36px 0 48px;
 }
@@ -137,12 +152,21 @@ article.post h3 { font-size: 1.1rem; margin: 26px 0 8px; }
 article.post p { margin: 0 0 16px; }
 article.post ul, article.post ol { margin: 0 0 16px; padding-left: 24px; }
 article.post li { margin-bottom: 6px; }
+
+/* Wide tables scroll sideways inside their own box on narrow screens,
+   instead of squeezing the columns or pushing the whole page sideways. */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 20px 0 26px;
+}
 article.post table {
   width: 100%;
   border-collapse: collapse;
   margin: 20px 0 26px;
   font-size: 0.95rem;
 }
+.table-scroll table { margin: 0; min-width: 620px; }
 article.post th, article.post td {
   border: 1px solid var(--border);
   padding: 9px 12px;
@@ -184,6 +208,7 @@ article.post .disclaimer {
   border-top: 1px solid var(--border);
   margin-top: 48px;
   padding: 28px 0 36px;
+  padding-bottom: calc(36px + env(safe-area-inset-bottom, 0px));
   color: var(--muted);
   font-size: 0.9rem;
 }
@@ -193,11 +218,39 @@ article.post .disclaimer {
   gap: 10px 28px;
   align-items: center;
 }
-.site-footer a { color: var(--muted); }
+.site-footer a { color: var(--muted); display: inline-block; padding: 6px 0; }
 
 @media (max-width: 600px) {
   body { font-size: 16px; }
+  .wrap, .wrap-wide { padding: 0 16px; }
+  .hero { padding: 36px 0 32px; }
   .hero h1 { font-size: 1.6rem; }
   article.post h1 { font-size: 1.55rem; }
-  .site-header nav { gap: 12px; }
+  article.post h2 { font-size: 1.25rem; }
+  article.post { padding-top: 28px; }
+
+  /* Header: brand row first, nav wraps onto its own full-width row
+     so nothing is squeezed and every link stays easy to tap. */
+  .site-header .wrap-wide { flex-wrap: wrap; row-gap: 2px; }
+  .site-header .brand { font-size: 1rem; }
+  .site-header nav {
+    margin-left: 0;
+    width: 100%;
+    gap: 4px 18px;
+    flex-wrap: wrap;
+  }
+  .site-header nav a { padding: 8px 2px; }
+
+  /* Full-width, easy-to-tap call-to-action buttons */
+  .hero .btn, .cta-box .btn { display: block; text-align: center; }
+
+  .cta-box { padding: 20px 18px; }
+  .card { padding: 18px; }
+  .cards { padding: 28px 0 36px; }
+  article.post .note { padding: 14px 16px; }
+  article.post .guide-link { padding: 16px 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
 }
